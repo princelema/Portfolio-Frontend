@@ -1,3 +1,6 @@
+// ===== API Configuration =====
+const API_BASE_URL = 'https://portfolio-backend-j8a8.onrender.com/api';
+
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
@@ -174,26 +177,32 @@ contactForm.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
 
     try {
-        // Simulate API call (replace with actual backend endpoint)
-        await simulateAPICall();
-        
-        // Show success message
-        showNotification('Message sent successfully! I\'ll get back to you soon.', 'success');
-        contactForm.reset();
+        // Call actual backend API
+        const response = await fetch(`${API_BASE_URL}/contact`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Show success message
+            showNotification(result.message || 'Message sent successfully! I\'ll get back to you soon.', 'success');
+            contactForm.reset();
+        } else {
+            showNotification(result.error || 'Something went wrong. Please try again later.', 'error');
+        }
     } catch (error) {
+        console.error('Contact form error:', error);
         showNotification('Something went wrong. Please try again later.', 'error');
     } finally {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
 });
-
-// ===== Simulate API Call =====
-function simulateAPICall() {
-    return new Promise((resolve) => {
-        setTimeout(resolve, 1500);
-    });
-}
 
 // ===== Notification System =====
 function showNotification(message, type) {
@@ -335,4 +344,5 @@ document.addEventListener('mousemove', (e) => {
 
 // ===== Console Message =====
 console.log('%c👋 Hello, Developer!', 'color: #6366f1; font-size: 24px; font-weight: bold;');
+console.log('%cBackend API Connected:', 'color: #10b981; font-size: 14px;', API_BASE_URL);
 console.log('%cInterested in the code? Feel free to explore and learn!', 'color: #64748b; font-size: 14px;');
